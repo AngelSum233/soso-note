@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function myfun(str) {
+        // 使用对象来储存出现的次数
+        let obj = {}; //空对象
+        let arr = [];
+        for (let i = 0; i < str.length; i++) {
+          // charAt方法用于返回指定索引处的字符。索引范围为从 0 到 length() - 1。
+          if (obj[str.charAt(i)]) {
+            obj[str.charAt(i)] = obj[str.charAt(i)] + 1;
+          } else {
+            obj[str.charAt(i)] = 1;
+          }
+        } // 定义最大次数
+        console.log("obj----", obj)
+        let minStr,
+          minnum = obj[str.charAt(0)]; // 遍历对象
+        for (let k in obj) {
+          if (obj[k] <= minnum) {
+            // 如果 num 大于等于obj [k]
+            minnum = obj[k];
+            minStr = k;
+          }
+        }
+        console.log(minStr);
+      }
+      myfun("aaabbbeeccc");
+    </script>
+  </body>
+</html>
