@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <span>递归、分治、动态规划</span>
+    <span>本题用 穷举法/暴力法 理解起来更为简单</span>
+    <script>
+      // 递归开始
+      const d = {
+        3: 3,
+        4: 4,
+        5: 5,
+        6: 6,
+        7: 7,
+        8: 8,
+        9: 9,
+        10: 10,
+        J: 11,
+        Q: 12,
+        K: 13,
+        A: 1,
+        2: 2,
+      };
+      const res = [];
+      // 从最后一个数开始放置的
+      function myfun(nums, target) {
+        // [4,2,K,A]
+        if (nums.length == 1) {
+          if (d[nums[0]] == target) {
+            res.push(nums[0]);
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        for (let i = 0; i < nums.length; i++) {
+          const a = nums[i];
+          const b = nums.slice(0, i).concat(nums.slice(i + 1));
+          // a=A , b=[K,4,2]
+          if (myfun(b, target + d[a])) {
+            res.push("-" + a);
+            return true;
+          } else if (myfun(b, target - d[a])) {
+            res.push("+" + a);
+            return true;
+          } else if (myfun(b, target * d[a])) {
+            res.push("/" + a);
+            return true;
+          } else if (target % d[a] === 0 && myfun(b, target / d[a])) {
+            res.push("*" + a);
+            return true;
+          }
+        }
+        return false;
+      }
+      function get24(str) {
+        var nums = str.split(" ");
+        if (nums.includes("joker") || nums.includes("JOKER")) {
+          console.log("ERROR");
+        } else {
+          if (myfun(nums, 24)) {
+            console.log(res.join(""));
+          } else {
+            console.log("NONE");
+          }
+        }
+      }
+      get24("A K 2 4");
+      // K-A*4/2
+      // 递归结束
+
+      // 穷举法开始
+      const get24a = (str) => {
+        const myobj = {
+          3: 3,
+          4: 4,
+          5: 5,
+          6: 6,
+          7: 7,
+          8: 8,
+          9: 9,
+          10: 10,
+          J: 11,
+          Q: 12,
+          K: 13,
+          A: 1,
+          2: 2,
+        };
+        if (str.includes("JOKER") || str.includes("joker")) {
+          console.log("ERROR");
+          return;
+        }
+        // split为字符串的方法,用于字符串转为数组
+        // 例 "4 A".split(" ") // [4,A]
+        const strArr = str.split(" ");
+        // strArr = [4,2,K,A]
+        const mathSObj = {
+          0: "+",
+          1: "-",
+          2: "*",
+          3: "/",
+        };
+        // 二维数组 有四个数 每个数都可能出现在第一位 出现在第一位的后边又相继有6种情况
+        // 对于一个确定顺序的数组 中间的符号放法共有 4*4*4 种
+        // 一共枚举出 4*6 种不同的顺序 总共循环 4*6*4*4*4=1536 种
+        const allNumArr = [
+          [0, 1, 2, 3],
+          [0, 1, 3, 2],
+          [0, 3, 1, 2],
+          [0, 3, 2, 1],
+          [0, 2, 3, 1],
+          [0, 2, 1, 3],
+
+          [1, 0, 2, 3],
+          [1, 0, 3, 2],
+          [1, 3, 0, 2],
+          [1, 3, 2, 0],
+          [1, 2, 3, 0],
+          [1, 2, 0, 3],
+
+          [2, 1, 0, 3],
+          [2, 1, 3, 0],
+          [2, 3, 1, 0],
+          [2, 3, 0, 1],
+          [2, 0, 3, 1],
+          [2, 0, 1, 3],
+
+          [3, 1, 2, 0],
+          [3, 1, 0, 2],
+          [3, 0, 1, 2],
+          [3, 0, 2, 1],
+          [3, 2, 0, 1],
+          [3, 2, 1, 0],
+        ];
+        const mathCalc = (num1, type, num2) => {
+          // 4,0,2 > 6,0,13
+          switch (type) {
+            case 0:
+              return num1 + num2;
+            case 1:
+              return num1 - num2;
+            case 2:
+              return num1 * num2;
+            case 3:
+              return num1 / num2;
+            default:
+              break;
+          }
+        };
+        // 传入number的集合，传入string的集合
+        // 这个方法的含义其实就是 通过不断的循环来试一试 加起来能否=24
+        // 先处理1、2项， 再拿1、2项的计算结果来拼第3项，再拿第4项来拼接前三项的计算结果
+        // 最后对结果进行判断 如果为24就跳出所有的循环,并且进行输出
+        const doCal = (numArr, nameArr) => {
+          // 首层循环 numArr=[4,2,13,1] nameArr=[4,2,K,A]
+          //4的意义是 4种运算符
+          let mLen = 4;
+          let count;
+          let countArr = [];
+          let i = 0;
+          let count1 = numArr[0];
+          while (i < mLen) {
+            // i=0 count2=6
+            let count2 = mathCalc(count1, i, numArr[1]);
+            let j = 0;
+            while (j < mLen) {
+              // j=0 count3=19
+              let count3 = mathCalc(count2, j, numArr[2]);
+              let m = 0;
+              while (m < mLen) {
+                // m=0 count=20
+                count = mathCalc(count3, m, numArr[3]);
+                if (count === 24) {
+                  countArr = [
+                    nameArr[0],
+                    mathSObj[i],
+                    nameArr[1],
+                    mathSObj[j],
+                    nameArr[2],
+                    mathSObj[m],
+                    nameArr[3],
+                  ];
+                  break;
+                }
+                m++;
+              }
+              if (count === 24) {
+                break;
+              }
+              j++;
+            }
+            if (count === 24) {
+              break;
+            }
+            i++;
+          }
+          return countArr;
+        };
+        // for...of 一般用于遍历 数组
+        // for...in 一般用于遍历 对象
+        for (const group of allNumArr) {
+          // [4,2,K,A] 第一次遍历 group = [0, 1, 2, 3]
+          const numArr = [];
+          const nameArr = [];
+          for (const index of group) {
+            // 根据index放置numArr 这层遍历结束
+            // numArr=[4,2,13,1] nameArr=[4,2,K,A]
+            // push是数组的方法,用于向数组添加元素 例 [].push(1) //[1]
+            numArr.push(myobj[strArr[index]]);
+            nameArr.push(strArr[index]);
+          }
+          const resArr = doCal(numArr, nameArr);
+          // doCal执行了doCal方法后 看看是否返回一个有值的数组
+          if (resArr.length) {
+            // join是数组的方法,用于 数组转为字符串
+            // 例 [1,2,3,4].join("") // "1234"
+            // 例 [1,2,3,4].join(" ") //"1 2 3 4"
+            // 例 [1,2,3,4].join(",") //"1,2,3,4"
+            console.log(resArr.join(""));
+            return;
+          }
+        }
+        console.log("NONE");
+      };
+      let lineStr;
+      // while (lineStr = readline()) {
+      //   if (lineStr) {
+      //     get24a(lineStr);
+      //   }
+      // }
+      get24a("4 2 K A");
+      // 穷举法结束
+    </script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let ispri = (num) => {
+        if (num <= 1) return false;
+        let factor = 1;
+        for (let i = 2; i < num; ++i) factor = (factor * i) % num;
+        factor = (factor + 1) % num;
+        return factor == 0;
+      };
+      let myfun = (n) => {
+        // 存放所有小于n的质数
+        let arr = [];
+        for (let num = 2; num < n; num++) {
+          if (ispri(num)) {
+            arr.push(num);
+          }
+        }
+        let len = arr.length,
+          maxNum = 0;
+        for (let i = 0; i < len; i++) {
+          for (let j = i; j < len; j++) {
+            if (arr[i] + arr[j] >= n) {
+              break;
+            }
+            for (let k = j; k < len; k++) {
+              if (arr[i] + arr[j] + arr[k] == n) {
+                maxNum = Math.max(maxNum, arr[i] * arr[j] * arr[k]);
+              }
+            }
+          }
+        }
+        return maxNum;
+      };
+      console.log("调用----", myfun(8));
+    </script>
+  </body>
+</html>
